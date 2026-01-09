@@ -17,6 +17,18 @@ rotateArray([1, 2, 3, 4, 5], 7); // Expected output: [3, 4, 5, 1, 2]
 
 */
 
-const rotateArray = (arr, n) => {};
+const rotateArray = (arr, n) => {
+  if (arr.length === 0) return arr;
+
+  const rotation = n % arr.length;
+
+  if (rotation === 0) return arr;
+
+  const head = arr.slice(0, rotation);
+
+  const tail = arr.slice(rotation);
+
+  return tail.concat(head);
+};
 
 module.exports = rotateArray;
