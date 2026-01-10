@@ -25,9 +25,7 @@ const rotateArray = (arr, n) => {
   if (rotation === 0) return arr;
 
   const head = arr.slice(0, rotation);
-
   const tail = arr.slice(rotation);
-
   return tail.concat(head);
 };
 

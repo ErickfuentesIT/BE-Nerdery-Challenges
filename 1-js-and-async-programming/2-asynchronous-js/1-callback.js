@@ -28,7 +28,6 @@ const makeRequestWithRetries = (attempts) => {
       if (!error) {
         console.log(response);
       } else if (currentAttempt < attempts) {
-        console.log(error);
         makeAttempt(currentAttempt + 1);
       } else {
         console.log("All attempts failed");

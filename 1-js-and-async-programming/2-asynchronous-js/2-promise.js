@@ -39,13 +39,6 @@ const getUsersWithMoreDislikedMoviesThanLikedMovies = () => {
 
       const likesCount = userLikes ? userLikes.movies.length : 0;
       const dislikesCount = userDislikes ? userDislikes.movies.length : 0;
-      console.log(
-        "LikesCount: ",
-        likesCount,
-        " DislikesCount: ",
-        dislikesCount,
-      );
-
       return dislikesCount > likesCount;
     });
     return result;
