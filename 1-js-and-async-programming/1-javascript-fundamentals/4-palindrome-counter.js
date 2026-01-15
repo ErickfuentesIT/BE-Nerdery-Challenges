@@ -33,15 +33,16 @@ Requirements:
 
 const palindromeCounter = (text, minLength) => {
   const wordsArray = text.toLowerCase().split(" ");
-  let palCounter = 0;
-  for (const word of wordsArray) {
-    if (word.length >= minLength) {
-      let reverseWord = word.split("").reverse().join("");
-      if (reverseWord === word) {
-        palCounter++;
-      }
+  let palInitialValue = 0;
+
+  const palCounter = wordsArray.reduce((palTotal, currentWord) => {
+    let reverseWord = currentWord.split("").reverse().join("");
+    if (currentWord.length >= minLength && reverseWord === currentWord) {
+      return palTotal + 1;
     }
-  }
+    return palTotal;
+  }, palInitialValue);
+
   return palCounter;
 };
 
