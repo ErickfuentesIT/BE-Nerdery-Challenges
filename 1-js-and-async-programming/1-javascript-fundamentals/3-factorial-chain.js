@@ -43,12 +43,13 @@ const factorialChain = (number, lastDigits) => {
     factorialResults.push(factorialValue);
   }
 
-  let sum = 0;
-  for (const result of factorialResults) {
-    sum += result;
-  }
+  let sumInitialValue = 0;
+  const totalSum = factorialResults.reduce(
+    (sum, currentNumber) => sum + currentNumber,
+    sumInitialValue,
+  );
 
-  let rawResult = String(sum);
+  let rawResult = String(totalSum);
   let finalResult =
     rawResult.length < lastDigits
       ? rawResult.padStart(lastDigits, "0")

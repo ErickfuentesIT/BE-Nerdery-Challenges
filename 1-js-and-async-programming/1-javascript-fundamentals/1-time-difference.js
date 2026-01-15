@@ -22,10 +22,7 @@ const TIME_PROPS = {
 };
 
 const timeDifference = (a, b) => {
-  const times = [a, b];
-  const ascendingSortedTime = times.sort((a, b) => b - a);
-
-  const difference = ascendingSortedTime[0] - ascendingSortedTime[1];
+  const difference = Math.abs(a - b);
 
   const hours = Math.trunc(difference / TIME_PROPS.hourInSeconds).toFixed(0);
   const minutes = Math.trunc(
