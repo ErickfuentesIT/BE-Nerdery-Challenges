@@ -34,11 +34,14 @@ const getUsersWithMoreDislikedMoviesThanLikedMovies = () => {
     mockedApi.getDislikedMovies(),
   ]).then(([users, likesData, dislikesData]) => {
     const result = users.filter((user) => {
-      const userLikes = likesData.find((item) => item.userId === user.id);
-      const userDislikes = dislikesData.find((item) => item.userId === user.id);
-
-      const likesCount = userLikes ? userLikes.movies.length : 0;
-      const dislikesCount = userDislikes ? userDislikes.movies.length : 0;
+      const likesMap = new Map(
+        likesData.map((item) => [item.userId, item.movies.length]),
+      );
+      const dislikesMap = new Map(
+        dislikesData.map((item) => [item.userId, item.movies.length]),
+      );
+      const likesCount = likesMap.get(user.id) ?? 0;
+      const dislikesCount = dislikesMap.get(user.id) ?? 0;
       return dislikesCount > likesCount;
     });
     return result;

@@ -17,21 +17,25 @@
  *
  * @returns {Promise<string>} Logs the subscription name as a string.
  */
-
 const mockedApi = require("./utils/mocked-api");
 
 const getCommonDislikedSubscription = async () => {
-  // Add your code here
+  const [users, likesData, dislikesData] = await Promise.all([
+    mockedApi.getUsers(),
+    mockedApi.getLikedMovies(),
+    mockedApi.getDislikedMovies(),
+  ]);
 
-  const users = await mockedApi.getUsers();
-  const likesData = await mockedApi.getLikedMovies();
-  const dislikesData = await mockedApi.getDislikedMovies();
   const usersWithMoreDislikes = users.filter((user) => {
-    const userLikes = likesData.find((item) => item.userId === user.id);
-    const userDislikes = dislikesData.find((item) => item.userId === user.id);
+    const likesMap = new Map(
+      likesData.map((item) => [item.userId, item.movies.length]),
+    );
+    const dislikesMap = new Map(
+      dislikesData.map((item) => [item.userId, item.movies.length]),
+    );
 
-    const likesCount = userLikes ? userLikes.movies.length : 0;
-    const dislikesCount = userDislikes ? userDislikes.movies.length : 0;
+    const likesCount = likesMap.get(user.id) ?? 0;
+    const dislikesCount = dislikesMap.get(user.id) ?? 0;
 
     return dislikesCount > likesCount;
   });
@@ -47,7 +51,6 @@ const getCommonDislikedSubscription = async () => {
     return acc;
   }, {});
 
-  let mostCommon = "";
   let maxCount = 0;
 
   for (const subName in counts) {
