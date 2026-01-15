@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Playstation 6",
+    "price": 800,
+    "store": "Sony"
+  },
+  {
+    "id": 2,
+    "name": "GTA VI",
+    "price": 200,
+    "store": "Rockstar Games"
+  },
+  {
+    "id": 3,
+    "name": "RTX 5070",
+    "price": 1300,
+    "store": "Nvidia"
+  },
+  {
+    "id": 4,
+    "name": "XBOX",
+    "price": 700,
+    "store": "MICROSOFT"
+  }
+]

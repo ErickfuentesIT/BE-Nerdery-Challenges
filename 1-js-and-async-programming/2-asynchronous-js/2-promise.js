@@ -23,16 +23,34 @@
  * Logs and returns the users who dislike more movies than they like.
  *
  * @returns {Promise<User[]>} A promise that resolves to an array of users who dislike more movies than they like.
- */
+ */ const mockedApi = require("./utils/mocked-api");
+
 const getUsersWithMoreDislikedMoviesThanLikedMovies = () => {
   // Add your code here
 
-  return [];
+  return Promise.all([
+    mockedApi.getUsers(),
+    mockedApi.getLikedMovies(),
+    mockedApi.getDislikedMovies(),
+  ]).then(([users, likesData, dislikesData]) => {
+    const result = users.filter((user) => {
+      const likesMap = new Map(
+        likesData.map((item) => [item.userId, item.movies.length]),
+      );
+      const dislikesMap = new Map(
+        dislikesData.map((item) => [item.userId, item.movies.length]),
+      );
+      const likesCount = likesMap.get(user.id) ?? 0;
+      const dislikesCount = dislikesMap.get(user.id) ?? 0;
+      return dislikesCount > likesCount;
+    });
+    return result;
+  });
 };
 
 getUsersWithMoreDislikedMoviesThanLikedMovies().then((users) => {
   console.log("Users with more disliked movies than liked movies:");
   users.forEach((user) => {
-    console.log(user, age);
+    console.log(user, user.age);
   });
 });
