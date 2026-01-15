@@ -19,7 +19,9 @@
  *
  **/
 
-async function analyzeProductPrices(products: any[]): Promise<any> {}
+import { IProduct, IBrand, ICategory, IDepartment } from "./1-types";
+
+async function analyzeProductPrices(products: IProduct[]): Promise<any> {}
 
 /**
  *  Challenge 2: Build a Product Catalog with Brand Metadata
