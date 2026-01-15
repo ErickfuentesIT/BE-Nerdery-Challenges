@@ -1,10 +1,7 @@
-const fs = require("fs").promises;
-
-const pathFile = "./data/wish-list.json";
+const { loadJson } = require("./jsonUtils");
 
 async function getSummary() {
-  const fileContent = await fs.readFile(pathFile, { encoding: "utf-8" });
-  let jsonData = JSON.parse(fileContent);
+  let jsonData = await loadJson();
   const mostExpensiveItem = Math.max(...jsonData.map((item) => item.price));
   const totalPrice = jsonData.reduce(
     (total, currentValue) => total + currentValue.price,
