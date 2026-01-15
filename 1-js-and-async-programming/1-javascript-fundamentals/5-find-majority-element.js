@@ -25,7 +25,7 @@ const findMajorityElement = (arr) => {
   if (arr.length === 1) return arr[0];
 
   const counts = {};
-  const limit = arr.length / 2;
+  const limit = Math.floor(arr.length / 2);
 
   for (const num of arr) {
     counts[num] = (counts[num] || 0) + 1;
