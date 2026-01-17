@@ -37,6 +37,10 @@ const brandFilePath = "./data/brands.json";
 async function analyzeProductPrices(
   products: IProduct[],
 ): Promise<IAnalyzeProductPrices> {
+  if (!products || products.length === 0) {
+    throw new Error("Something went wrong! There are no records in the array");
+  }
+
   try {
     const initialObject = {
       mostExpensiveProduct: products[0],
@@ -66,7 +70,6 @@ async function analyzeProductPrices(
     let averagePrice = calculations.totalPrice / productsQuantity;
     const averageDiscount =
       (calculations.totalDiscountPercentage / calculations.onSaleCount) * 100;
-    console.log(calculations.totalDiscountPercentage, calculations.onSaleCount);
     return {
       totalPrice: calculations.totalPrice,
       averagePrice: Number(averagePrice.toFixed(2)),
@@ -81,7 +84,7 @@ async function analyzeProductPrices(
     throw error;
   }
 }
-
+// **************Uncomment to execute this function
 // async function firstFunction(filePath: string) {
 //   const data = (await readJson(filePath)) as IProduct[];
 //   const result = await analyzeProductPrices(data);
@@ -153,6 +156,7 @@ async function buildProductCatalog(
   return enrichedProducts;
 }
 
+// **************Uncomment to execute this function
 // async function firstFunction(filePath: string, filePath2: string) {
 //   const [brands, products] = await Promise.all([
 //     readJson<IBrand>(filePath),
@@ -206,15 +210,16 @@ async function filterProductsWithOneImage(
   return productWithOneImage;
 }
 
-async function productsWithOneImage(productFilePath: string) {
-  const productData = await readJson<IProduct>(productFilePath);
-  const result = await filterProductsWithOneImage(productData);
+// **************Uncomment to execute this function
+// async function productsWithOneImage(productFilePath: string) {
+//   const productData = await readJson<IProduct>(productFilePath);
+//   const result = await filterProductsWithOneImage(productData);
 
-  for (const image of result) {
-    console.groupCollapsed(image.id);
-    console.log(image);
-    console.groupEnd();
-  }
-}
+//   for (const image of result) {
+//     console.groupCollapsed(image.id);
+//     console.log(image);
+//     console.groupEnd();
+//   }
+// }
 
-productsWithOneImage(productFilePath);
+// productsWithOneImage(productFilePath);

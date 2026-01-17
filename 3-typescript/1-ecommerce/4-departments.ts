@@ -30,7 +30,7 @@ interface IProductsPerDepartment {
   id: number;
   departmentName: string;
   productAvailableInDepartment: number;
-  productName: string[];
+  productNames: string[];
 }
 
 async function getDepartmentsWithProductCount(
@@ -46,7 +46,7 @@ async function getDepartmentsWithProductCount(
       id: department.id,
       departmentName: department.name,
       productAvailableInDepartment: 0,
-      productName: [],
+      productNames: [],
     };
   });
 
@@ -54,7 +54,7 @@ async function getDepartmentsWithProductCount(
     const department = departmentIdAndName[product.departmentId];
     if (department) {
       department.productAvailableInDepartment += 1;
-      department.productName.push(product.name);
+      department.productNames.push(product.name);
     }
   });
 
