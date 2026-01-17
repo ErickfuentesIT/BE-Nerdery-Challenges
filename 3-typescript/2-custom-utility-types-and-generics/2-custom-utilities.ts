@@ -1,3 +1,11 @@
+type TUser = {
+  id?: number;
+  username?: string;
+  email?: string;
+  profilePicture: string;
+  isActive: boolean;
+};
+
 /**
  * Exercise #1: Filter object properties by type.
  *
@@ -22,7 +30,12 @@
 
 // Add here your solution
 
+type OmitByType<T, U> = {
+  [Key in keyof T as T[Key] extends U ? never : Key]: T[Key];
+};
+
 // Add here your example
+type TUserExceptBoolean = OmitByType<TUser, boolean>;
 
 /**
  * Exercise #2: Implement the utility type `If<C, T, F>`, which evaluates a condition `C`
@@ -40,9 +53,12 @@
  */
 
 // Add here your solution
+type If<C, T, F> = C extends true ? T : F;
 
 // Add here your example
 
+type A = If<true, "a", "b">;
+type B = If<false, "a", "b">;
 /**
  * Exercise #3: Recreate the built-in `Readonly<T>` utility type without using it.
  *
@@ -67,7 +83,19 @@
 
 // Add here your solution
 
+type TReadOnly = {
+  readonly [Keys in keyof TUser]: TUser[Keys];
+};
+
 // Add here your example
+
+const readUser: TReadOnly = {
+  id: 1,
+  username: "Erick",
+  email: "erick@example.com",
+  profilePicture: "erick_1.png",
+  isActive: true,
+};
 
 /**
  * Exercise #4: Recreate the built-in `ReturnType<T>` utility type without using it.
@@ -88,8 +116,23 @@
  */
 
 // Add here your solution
+type MyReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => infer R
+  ? R
+  : any;
 
 // Add here your example
+
+const country = (v: boolean) => {
+  if (v) {
+    return "Brazil";
+  } else {
+    return "Argentina";
+  }
+};
+
+type a = MyReturnType<typeof country>;
 
 /**
  * Exercise #5: Extract the type inside a wrapped type like `Promise`.
@@ -107,7 +150,14 @@
 
 // Add here your solution
 
+type MyAwaited<T extends Promise<unknown>> =
+  T extends Promise<infer InnerType> ? InnerType : never;
 // Add here your example
+
+type NumberPromise = Promise<number>;
+type BooleanPromise = Promise<boolean>;
+type PromiseResult1 = MyAwaited<NumberPromise>;
+type PromiseResult2 = MyAwaited<BooleanPromise>;
 
 /**
  * Exercise 6: Create a utility type `RequiredByKeys<T, K>` that makes specific keys of `T` required.
@@ -131,5 +181,16 @@
  */
 
 // Add here your solution
+type RequiredByKeys<T, K extends keyof T = keyof T> = Required<Pick<T, K>> &
+  Omit<T, K>;
 
 // Add here your example
+type TRequiredUser = RequiredByKeys<TUser, "id" | "email">;
+
+const requiredUser: TRequiredUser = {
+  id: 1,
+  // username: "Erick",
+  email: "erick@example.com",
+  profilePicture: "erick_1.png",
+  isActive: true,
+};
