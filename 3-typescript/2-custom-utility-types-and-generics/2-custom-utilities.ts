@@ -83,13 +83,13 @@ type B = If<false, "a", "b">;
 
 // Add here your solution
 
-type TReadOnly = {
-  readonly [Keys in keyof TUser]: TUser[Keys];
+type TReadOnly<T> = {
+  readonly [Keys in keyof T]: T[Keys];
 };
 
 // Add here your example
 
-const readUser: TReadOnly = {
+const readUser: TReadOnly<TUser> = {
   id: 1,
   username: "Erick",
   email: "erick@example.com",
