@@ -53,7 +53,7 @@ type TUserExceptBoolean = OmitByType<TUser, boolean>;
  */
 
 // Add here your solution
-type If<C, T, F> = C extends true ? T : F;
+type If<C extends boolean, T, F> = C extends true ? T : F;
 
 // Add here your example
 
@@ -150,11 +150,16 @@ type a = MyReturnType<typeof country>;
 
 // Add here your solution
 
-type MyAwaited<T extends Promise<unknown>> =
-  T extends Promise<infer InnerType> ? InnerType : never;
+type MyAwaited<T> = T extends null | undefined
+  ? T
+  : T extends object & { then(onfulfilled: infer F, ...args: infer _): any }
+    ? F extends (value: infer V, ...args: infer _) => any
+      ? MyAwaited<V>
+      : never
+    : T;
 // Add here your example
 
-type NumberPromise = Promise<number>;
+type NumberPromise = Promise<Promise<number>>;
 type BooleanPromise = Promise<boolean>;
 type PromiseResult1 = MyAwaited<NumberPromise>;
 type PromiseResult2 = MyAwaited<BooleanPromise>;
@@ -181,8 +186,13 @@ type PromiseResult2 = MyAwaited<BooleanPromise>;
  */
 
 // Add here your solution
-type RequiredByKeys<T, K extends keyof T = keyof T> = Required<Pick<T, K>> &
-  Omit<T, K>;
+type Flatten<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+type RequiredByKeys<T, K extends keyof T = keyof T> = Flatten<
+  Required<Pick<T, K>> & Omit<T, K>
+>;
 
 // Add here your example
 type TRequiredUser = RequiredByKeys<TUser, "id" | "email">;

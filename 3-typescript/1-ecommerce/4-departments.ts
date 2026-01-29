@@ -21,7 +21,7 @@
  *
  */
 
-import { IDepartment, IProduct } from "./1-types";
+import { TDepartment, TProduct } from "./1-types";
 import readJson from "./utils/read-json.util";
 const departmentsFilePath = "./data/departments.json";
 const productsFilePath = "./data/products.json";
@@ -33,10 +33,10 @@ interface IProductsPerDepartment {
   productNames: string[];
 }
 
-async function getDepartmentsWithProductCount(
-  departments: IDepartment[],
-  products: IProduct[],
-): Promise<IProductsPerDepartment[]> {
+function getDepartmentsWithProductCount(
+  departments: TDepartment[],
+  products: TProduct[],
+): IProductsPerDepartment[] {
   // Implement the function logic here
 
   const departmentIdAndName: Record<string, IProductsPerDepartment> = {};
@@ -63,8 +63,8 @@ async function getDepartmentsWithProductCount(
 
 async function execute() {
   const [department, product] = await Promise.all([
-    readJson<IDepartment>(departmentsFilePath),
-    readJson<IProduct>(productsFilePath),
+    readJson<TDepartment>(departmentsFilePath),
+    readJson<TProduct>(productsFilePath),
   ]);
   const result = await getDepartmentsWithProductCount(department, product);
   console.log(result);

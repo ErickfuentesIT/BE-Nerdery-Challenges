@@ -12,47 +12,49 @@
  * - The return should be a type that allow us to define the country name as a key and the amount of products as a value.
  */
 
-import { IProduct, IBrand } from "./1-types";
+import { TProduct, TBrand } from "./1-types";
 import readJson from "./utils/read-json.util";
 
-interface ICountriesBrandProductCount {
+interface TCountriesBrandProductCount {
   country: string; // brands.headquarters
   amountProductAvailable: number;
 }
 
-const productsFilePath = "./data/products.json";
-const brandsFilePath = "./data/brands.json";
+const productsFilePath = __dirname + "/data/products.json";
+const brandsFilePath = __dirname + "/data/brands.json";
 
-async function getCountriesWithBrandsAndProductCount(
-  brands: IBrand[],
-  products: IProduct[],
-): Promise<ICountriesBrandProductCount[]> {
-  const brandIdAndCountry: Record<string, string> = {};
-  const countryAndAmount: Record<string, number> = {};
+function getCountriesWithBrandsAndProductCount(
+  brands: TBrand[],
+  products: TProduct[],
+): TCountriesBrandProductCount[] {
+  const brandCountryMap = new Map<TBrand["id"], string>(
+    brands.map((brand) => {
+      const parts = brand.headquarters.split(",");
+      const country = parts[parts.length - 1].trim();
+      return [String(brand.id), country];
+    }),
+  );
 
-  brands.forEach((brand) => {
-    const locations = brand.headquarters.split(",");
-    const country = locations[locations.length - 1].trim();
-    brandIdAndCountry[brand.id] = country;
-  });
+  const countryCounts = new Map<string, number>();
 
   products.forEach((product) => {
-    const country = brandIdAndCountry[product.brandId];
+    const country = brandCountryMap.get(String(product.brandId));
     if (country) {
-      countryAndAmount[country] = (countryAndAmount[country] || 0) + 1;
+      const currentCount = countryCounts.get(country) ?? 0;
+      countryCounts.set(country, currentCount + 1);
     }
   });
 
-  return Object.entries(countryAndAmount).map(([country, amount]) => ({
+  return Array.from(countryCounts, ([country, amountProductAvailable]) => ({
     country,
-    amountProductAvailable: amount,
+    amountProductAvailable,
   }));
 }
 
 async function execute() {
   const [brand, product] = await Promise.all([
-    readJson<IBrand>(brandsFilePath),
-    readJson<IProduct>(productsFilePath),
+    readJson<TBrand>(brandsFilePath),
+    readJson<TProduct>(productsFilePath),
   ]);
   const result = await getCountriesWithBrandsAndProductCount(brand, product);
   console.log(result);

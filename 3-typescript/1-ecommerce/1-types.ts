@@ -21,7 +21,7 @@
 // PRODUCTS JSON
 //! Add necessary type definitions for the products json file
 
-export interface IProduct extends TOptionalProduct {
+export type TProduct = {
   id: number;
   name: string;
   departmentId: number;
@@ -47,49 +47,40 @@ export interface IProduct extends TOptionalProduct {
   colors: string[];
   sizes: number[];
   tags: string[];
-  images: IImage[];
-  specifications: ISpecification;
-}
+  images: TImage[];
+  specifications: Partial<TSpecification>;
+  adWordsRemarketingCode?: string;
+  lomadeeCampaignCode?: string;
+  cushioning?: string;
+  insulation?: string;
+  archSupport?: string;
+  heelDrop?: string;
+  shaftHeight?: string;
+  ankleSupport?: string;
+  waterprofing?: string;
+  flexibility?: string;
+  lining?: string;
+  heelHeight?: string;
+};
 
-type TOptionalProduct = Partial<IOptionalProduct>;
-
-interface IOptionalProduct {
-  adWordsRemarketingCode: string;
-  lomadeeCampaignCode: string;
-}
-
-export interface IImage {
+export type TImage = {
   id: number;
   url: string;
   alt: string;
   isMain: boolean;
-}
-interface ISpecification extends TOptionalSpecification {
+};
+
+type TSpecification = {
   material: string;
   weight: string;
   closure: string;
-}
-
-type TOptionalSpecification = Partial<IOptionalSpecification>;
-
-interface IOptionalSpecification {
-  cushioning: string;
-  insulation: string;
-  archSupport: string;
-  heelDrop: string;
-  shaftHeight: string;
-  ankleSupport: string;
-  waterprofing: string;
-  flexibility: string;
-  lining: string;
-  heelHeight: string;
-}
+};
 
 // CATEGORIES JSON
 
 //! Add necessary type definitions for the brands json file
 
-export interface ICategory {
+export type TCategory = {
   id: number;
   name: string;
   departmentId: number;
@@ -100,21 +91,19 @@ export interface ICategory {
   bannerUrl: string;
   displayOrder: number;
   metaDescription: string;
-  filters: ICategoryFilters[];
-}
+  filters: TCategoryFilters[];
+};
 
-interface ICategoryFilters {
+type TCategoryFilters = {
   name: string;
   values: string[];
-}
+};
 
 // BRANDS JSON
 //! Add necessary type definitions for the brands json file
 
-type TId = string | number;
-
-export interface IBrand {
-  id: TId;
+export type TBrand = {
+  id: string;
   name: string;
   logo: string;
   description: string;
@@ -123,16 +112,16 @@ export interface IBrand {
   isActive: boolean;
   headquarters: string;
   signature: string;
-  socialMedia: ISocialMedia;
-}
+  socialMedia: TSocialMedia;
+};
 
-interface ISocialMedia {
+type TSocialMedia = {
   instagram: string;
   twitter: string;
   facebook: string;
-}
+};
 
-export interface IDepartment {
+export type TDepartment = {
   id: number;
   name: string;
   description: string;
@@ -143,4 +132,4 @@ export interface IDepartment {
   metaDescription: string;
   featuredCategroies: number[];
   slug: string;
-}
+};

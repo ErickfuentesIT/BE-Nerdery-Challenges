@@ -19,75 +19,68 @@
  *
  **/
 
-import { IProduct, IBrand, IImage } from "./1-types";
+import { TProduct, TBrand, TImage } from "./1-types";
 import readJson from "./utils/read-json.util";
 
-interface IAnalyzeProductPrices {
+type TAnalyzeProductPrices = {
   totalPrice: number; // products.price
   averagePrice: number; // products.price
-  mostExpensiveProduct: IProduct; // products
-  cheapestProduct: IProduct; // products
+  mostExpensiveProduct: TProduct; // products
+  cheapestProduct: TProduct; // products
   onSaleCount: number; // sum(products.salePrice)
   averageDiscount: number;
-}
+};
 
-const productFilePath = "./data/products.json";
-const brandFilePath = "./data/brands.json";
+// type TProductCalculation = {
+//   mostExpensiveProduct: TProduct;
+//   cheapestProduct: TProduct;
+//   totalPrice: number;
+//   onSaleCount: number;
+//   totalDiscountPercentage: number;
+// };
 
-async function analyzeProductPrices(
-  products: IProduct[],
-): Promise<IAnalyzeProductPrices> {
-  if (!products || products.length === 0) {
+const productFilePath = __dirname + "/data/products.json";
+const brandFilePath = __dirname + "/data/brands.json";
+
+function analyzeProductPrices(products: TProduct[]): TAnalyzeProductPrices {
+  if (!products || products.length === 0)
     throw new Error("Something went wrong! There are no records in the array");
-  }
 
-  try {
-    const initialObject = {
-      mostExpensiveProduct: products[0],
-      cheapestProduct: products[0],
-      totalPrice: 0,
-      onSaleCount: 0,
-      totalDiscountPercentage: 0,
-    };
-    const calculations = products.reduce((acc, curr) => {
-      if (curr.price > acc.mostExpensiveProduct.price) {
+  const { totalDiscountSum, ...calculations } = products.reduce(
+    (acc, curr) => {
+      if (curr.price > acc.mostExpensiveProduct.price)
         acc.mostExpensiveProduct = curr;
-      }
-      if (curr.price < acc.cheapestProduct.price) {
-        acc.cheapestProduct = curr;
-      }
+      if (curr.price < acc.cheapestProduct.price) acc.cheapestProduct = curr;
       acc.totalPrice += curr.price;
       if (curr.onSale) {
-        const discountPercent = (curr.price - curr.salePrice) / curr.price;
-        acc.totalDiscountPercentage += discountPercent;
-        acc.onSaleCount += 1;
+        acc.totalDiscountSum += (curr.price - curr.salePrice) / curr.price;
+        acc.onSaleCount++;
       }
-
       return acc;
-    }, initialObject);
-
-    const productsQuantity = products.length;
-    let averagePrice = calculations.totalPrice / productsQuantity;
-    const averageDiscount =
-      (calculations.totalDiscountPercentage / calculations.onSaleCount) * 100;
-    return {
-      totalPrice: calculations.totalPrice,
-      averagePrice: Number(averagePrice.toFixed(2)),
-      mostExpensiveProduct: calculations.mostExpensiveProduct,
-      cheapestProduct: calculations.cheapestProduct,
-      onSaleCount: calculations.onSaleCount,
-      averageDiscount: Number(averageDiscount.toFixed(2)),
-    };
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Error";
-    console.log("Something went wrong!", errorMessage);
-    throw error;
-  }
+    },
+    {
+      totalPrice: 0,
+      averagePrice: 0,
+      mostExpensiveProduct: products[0],
+      cheapestProduct: products[0],
+      onSaleCount: 0,
+      totalDiscountSum: 0,
+    } as TAnalyzeProductPrices & { totalDiscountSum: number },
+  );
+  return {
+    ...calculations,
+    averagePrice: Number(
+      (calculations.totalPrice / products.length).toFixed(2),
+    ),
+    averageDiscount: calculations.onSaleCount
+      ? Number(((totalDiscountSum / calculations.onSaleCount) * 100).toFixed(2))
+      : 0,
+  };
 }
 // **************Uncomment to execute this function
 // async function firstFunction(filePath: string) {
-//   const data = (await readJson(filePath)) as IProduct[];
-//   const result = await analyzeProductPrices(data);
+//   const data = (await readJson(filePath)) as TProduct[];
+//   const result = analyzeProductPrices(data);
 //   console.log(result);
 // }
 
@@ -125,42 +118,42 @@ async function analyzeProductPrices(
 
  */
 
-interface IEnrichedProduct extends IProduct {
+// interface IEnrichedProduct extends TProduct {
+//   brandInfo: TBrandInfo;
+// }
+
+type TBrandInfo = Omit<TBrand, "id" | "isActive">;
+
+type TEnrichedProduct = TProduct & {
   brandInfo: TBrandInfo;
-}
+};
 
-type TBrandInfo = Omit<IBrand, "id" | "isActive">;
-
-async function buildProductCatalog(
-  products: IProduct[],
-  brands: IBrand[],
-): Promise<IEnrichedProduct[]> {
-  const activeBrands: Record<string, TBrandInfo> = {};
-
-  const filteredBrands = brands.filter((brand) => brand.isActive);
-
-  filteredBrands.forEach((activeBrand) => {
-    const { id, isActive, ...metadata } = activeBrand;
-    activeBrands[id] = metadata;
-  });
-
-  const filteredProducts = products.filter(
-    (product) => product.isActive && activeBrands[product.brandId],
+function buildProductCatalog(
+  products: TProduct[],
+  brands: TBrand[],
+): TEnrichedProduct[] {
+  const activeBrandMap = new Map<string, TBrandInfo>(
+    brands
+      .filter((b) => b.isActive)
+      .map(({ id, isActive, ...metadata }) => [id, metadata]),
   );
 
-  const enrichedProducts = filteredProducts.map((product) => ({
-    ...product,
-    brandInfo: activeBrands[product.brandId],
-  }));
-
-  return enrichedProducts;
+  return products
+    .filter(
+      (product) =>
+        product.isActive && activeBrandMap.has(String(product.brandId)),
+    )
+    .map((product) => ({
+      ...product,
+      brandInfo: activeBrandMap.get(String(product.brandId))!,
+    }));
 }
 
 // **************Uncomment to execute this function
 // async function firstFunction(filePath: string, filePath2: string) {
 //   const [brands, products] = await Promise.all([
-//     readJson<IBrand>(filePath),
-//     readJson<IProduct>(filePath2),
+//     readJson<TBrand>(filePath),
+//     readJson<TProduct>(filePath2),
 //   ]);
 //   const result = await buildProductCatalog(products, brands);
 //   console.log(result);
@@ -183,37 +176,40 @@ async function buildProductCatalog(
  *
  *  [
  *    {
- *      IProduct
+ *      TProduct
  *    }
  * ]
  *
  */
 
-interface IProductWithOneImage extends Omit<IProduct, "images"> {
-  images: [IImage];
-}
+type TProductWithOneImage = Omit<TProduct, "images"> & {
+  image: TImage;
+};
 
-async function filterProductsWithOneImage(
-  products: IProduct[],
-): Promise<IProductWithOneImage[]> {
+function filterProductsWithOneImage(
+  products: TProduct[],
+): TProductWithOneImage[] {
   // Implement the function logic here
 
-  const filteredProducts = products.filter(
+  const filteredProductsByImages = products.filter(
     (product) => product.images.length > 0,
   );
 
-  const productWithOneImage = filteredProducts.map((product) => ({
-    ...product,
-    images: [product.images[0]] as [IImage],
-  }));
+  const productWithOneImage = filteredProductsByImages.map((product) => {
+    const { images, ...productProperties } = product;
+    return {
+      ...productProperties,
+      image: product.images[0],
+    };
+  });
 
   return productWithOneImage;
 }
 
 // **************Uncomment to execute this function
 // async function productsWithOneImage(productFilePath: string) {
-//   const productData = await readJson<IProduct>(productFilePath);
-//   const result = await filterProductsWithOneImage(productData);
+//   const productData = await readJson<TProduct>(productFilePath);
+//   const result = filterProductsWithOneImage(productData);
 
 //   for (const image of result) {
 //     console.groupCollapsed(image.id);

@@ -16,6 +16,9 @@
 const brands = require("./../1-ecommerce/data/brands.json");
 
 function deepClone<T>(object: T): T {
+  if (object === null || typeof object !== "object") {
+    return object;
+  }
   if (Array.isArray(object)) {
     const arrayCopy = [];
     for (let i = 0; i < object.length; i++) {
@@ -24,16 +27,13 @@ function deepClone<T>(object: T): T {
     return arrayCopy as T;
   }
 
-  if (typeof object === "object") {
-    const objectCopy = Object.create(Object.getPrototypeOf(object));
-    for (const key in object) {
-      if (Object.prototype.hasOwnProperty.call(object, key)) {
-        objectCopy[key] = deepClone(object[key]);
-      }
+  const objectCopy = Object.create(Object.getPrototypeOf(object));
+  for (const key in object) {
+    if (Object.prototype.hasOwnProperty.call(object, key)) {
+      objectCopy[key] = deepClone(object[key]);
     }
-    return objectCopy as T;
   }
-  return object;
+  return objectCopy as T;
 }
 
 const brand = deepClone(brands);
