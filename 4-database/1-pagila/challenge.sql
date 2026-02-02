@@ -136,7 +136,7 @@ SELECT
 FROM customer c 
 INNER JOIN rental r
 ON r.customer_id = c.customer_id
-GROUP BY c.first_name, c.last_name 
+GROUP BY c.customer_id
 )
 SELECT 
 	first_name, 
@@ -202,7 +202,7 @@ HAVING COUNT(DISTINCT fc.category_id)  <= (SELECT almost_all_genres FROM genres)
 CREATE MATERIALIZED VIEW revenue_by_category AS 
 SELECT 
 	c."name" AS category_name,
-	COUNT(p.amount) AS revenue_by_category
+	SUM(p.amount) AS revenue_by_category
 FROM payment p
 INNER JOIN rental r 
 ON p.rental_id = r.rental_id 
